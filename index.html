@@ -87,7 +87,12 @@ f.addEventListener("submit", async (ev) => {
         p_website: document.getElementById("website").value
       })
     });
-    if (!res.ok) throw new Error("http " + res.status);
+    if (!res.ok){
+      const detail = await res.text().catch(() => "");
+      const err = new Error("http " + res.status);
+      err.status = res.status; err.detail = detail;
+      throw err;
+    }
     const out = await res.json();
 
     if (out && out.ok && out.status === "added"){
@@ -106,7 +111,17 @@ f.addEventListener("submit", async (ev) => {
       show("err", (out && out.error) || "Something went wrong. Please try again.");
     }
   } catch (err) {
-    show("err", "Couldn't send that just now. Please check your connection and try again.");
+    // Distinguish "the server said no" from "the request never left the page".
+    // The second is what happens when this file is opened from disk rather than
+    // served over https: the origin is null and the browser blocks the call.
+    console.error("Eggsternal submit failed:", err && err.status ? err.status : err, err && err.detail);
+    if (err && err.status){
+      show("err", "Couldn't send that just now, please try again. (Error " + err.status + ")");
+    } else if (location.protocol === "file:"){
+      show("err", "This page has to be opened over the web, not from a file on your computer.");
+    } else {
+      show("err", "Couldn't reach us just now. Please check your connection and try again.");
+    }
   } finally {
     btn.disabled = false;
     btn.textContent = label;
