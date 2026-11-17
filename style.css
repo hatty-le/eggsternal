@@ -1,0 +1,146 @@
+/* Eggsternal — Lucky Egg house style.
+   Blue leads everywhere; orange/yellow/pink appear only as small highlights. */
+
+@font-face { font-family:"Wash Your Hand"; src:url("fonts/WashYourHand.ttf") format("truetype"); font-display:swap }
+@font-face { font-family:"Back Home";      src:url("fonts/BackHome.otf")      format("opentype"); font-display:swap }
+@font-face { font-family:"Menco Fallback"; src:url("fonts/Mulish.ttf")        format("truetype"); font-weight:100 900; font-display:swap }
+
+:root{
+  --sky-50:#EAF7FA; --sky-100:#D4EEF3; --sky-200:#C5E8EE; --sky-300:#A6DEE8;
+  --sky-400:#6ECCDC; --sky-500:#46B8CB; --sky-600:#2E9FB3; --sky-700:#1F7C8C;
+  --ink:#121417; --white:#fff;
+  --orange:#F9A12B; --yellow:#FCD829; --pink:#EF5798;
+  --font-display:"Wash Your Hand","Back Home",system-ui,sans-serif;
+  --font-subhead:"Back Home","Wash Your Hand",system-ui,sans-serif;
+  --font-body:"Menco","Menco Fallback","Mulish",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:var(--font-body); color:var(--ink);
+  background:var(--sky-50);
+  background-image:radial-gradient(circle at 12% -8%, var(--sky-200) 0, rgba(197,232,238,0) 46%),
+                   radial-gradient(circle at 92% 108%, var(--sky-200) 0, rgba(197,232,238,0) 44%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column; align-items:center;
+  min-height:100vh; padding:32px 18px 48px;
+}
+
+.logo{width:64px; height:auto; display:block; margin:0 auto 18px}
+
+h1{
+  font-family:var(--font-display); letter-spacing:.025em; font-weight:400;
+  font-size:2.6rem; line-height:1.05; text-align:center;
+  margin:0 0 10px; color:var(--sky-700);
+}
+.sub{
+  font-family:var(--font-subhead); letter-spacing:.075em; text-transform:uppercase;
+  font-size:.78rem; color:var(--sky-600); text-align:center; margin:0 0 26px;
+}
+
+.card{
+  width:100%; max-width:520px; background:var(--white);
+  border:1px solid var(--sky-200); border-radius:22px;
+  padding:26px 24px; box-shadow:0 10px 30px rgba(31,124,140,.10);
+}
+
+.field{margin-bottom:18px}
+label{
+  display:block; font-family:var(--font-subhead); letter-spacing:.075em;
+  text-transform:uppercase; font-size:.72rem; color:var(--sky-700); margin-bottom:7px;
+}
+.hint{font-family:var(--font-body); letter-spacing:0; text-transform:none; color:var(--sky-600); font-size:.72rem}
+
+input[type=text], input[type=url]{
+  width:100%; font-family:var(--font-body); font-size:1rem; color:var(--ink);
+  padding:13px 14px; background:var(--sky-50);
+  border:2px solid var(--sky-200); border-radius:13px; outline:none;
+  transition:border-color .15s, background .15s;
+}
+input:focus{border-color:var(--sky-400); background:var(--white)}
+input::placeholder{color:#9bb8be}
+
+button{
+  width:100%; cursor:pointer; font-family:var(--font-display); letter-spacing:.025em;
+  font-size:1.35rem; color:var(--white); background:var(--sky-500);
+  border:none; border-radius:14px; padding:14px 18px; margin-top:4px;
+  box-shadow:0 4px 0 var(--sky-600); transition:transform .08s, background .15s;
+}
+button:hover:not(:disabled){background:var(--sky-600); box-shadow:0 4px 0 var(--sky-700)}
+button:active:not(:disabled){transform:translateY(3px); box-shadow:0 1px 0 var(--sky-700)}
+button:disabled{opacity:.55; cursor:default}
+
+/* Hidden spam trap. Kept out of the tab order and off screen rather than
+   display:none, which some bots know to skip. */
+.trap{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
+
+.msg{
+  display:none; margin-top:16px; padding:12px 14px; border-radius:12px;
+  font-size:.92rem; line-height:1.45;
+}
+.msg.show{display:block}
+.msg.ok  {background:var(--sky-100); border:1px solid var(--sky-300); color:var(--sky-700)}
+.msg.dupe{background:#FFF6E3;       border:1px solid var(--orange);  color:#8a5a08}
+.msg.err {background:#FDEBF3;       border:1px solid var(--pink);    color:#93265a}
+
+.count{margin-top:12px; text-align:center; font-size:.8rem; color:var(--sky-600); min-height:1em}
+
+.nav{margin:22px 0 0; text-align:center}
+.nav a{
+  font-family:var(--font-subhead); letter-spacing:.075em; text-transform:uppercase;
+  font-size:.74rem; color:var(--sky-700); text-decoration:none;
+  border-bottom:2px solid var(--sky-300); padding-bottom:2px;
+}
+.nav a:hover{color:var(--sky-600); border-color:var(--sky-500)}
+
+footer{
+  max-width:520px; margin-top:26px; text-align:center;
+  font-size:.78rem; line-height:1.5; color:var(--sky-700); opacity:.85;
+}
+
+/* ── Leaderboard ───────────────────────────────────────────────────────── */
+table{width:100%; border-collapse:collapse; font-size:.94rem}
+thead th{
+  font-family:var(--font-subhead); letter-spacing:.075em; text-transform:uppercase;
+  font-size:.68rem; color:var(--sky-700); text-align:left;
+  padding:0 8px 10px; border-bottom:2px solid var(--sky-200); white-space:nowrap;
+}
+tbody td{padding:11px 8px; border-bottom:1px solid var(--sky-100); vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+td.place{
+  font-family:var(--font-display); letter-spacing:.025em;
+  font-size:1.2rem; color:var(--sky-500); width:1.6em;
+}
+tr.top1 td.place{color:var(--orange)}
+tr.top2 td.place{color:var(--sky-600)}
+tr.top3 td.place{color:var(--pink)}
+td.handle{font-weight:600; word-break:break-word}
+td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.removed{color:var(--sky-600)}
+.empty{text-align:center; color:var(--sky-600); padding:26px 8px; line-height:1.6}
+
+.totals{
+  display:flex; gap:10px; max-width:520px; width:100%; margin-bottom:16px;
+}
+.stat{
+  flex:1; background:var(--white); border:1px solid var(--sky-200);
+  border-radius:16px; padding:14px 10px; text-align:center;
+}
+.stat b{
+  display:block; font-family:var(--font-display); letter-spacing:.025em;
+  font-size:1.9rem; line-height:1.1; color:var(--sky-500);
+}
+.stat span{
+  font-family:var(--font-subhead); letter-spacing:.075em; text-transform:uppercase;
+  font-size:.64rem; color:var(--sky-700);
+}
+
+@media (max-width:460px){
+  body{padding:22px 14px 36px}
+  h1{font-size:2.05rem}
+  .card{padding:22px 18px; border-radius:18px}
+  .stat b{font-size:1.5rem}
+  thead th, tbody td{padding-left:5px; padding-right:5px}
+}

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="The partners who have reported the most fake Lucky Egg listings.">
+<title>Top spotters · Lucky Egg</title>
+<link rel="icon" href="logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<img class="logo" src="logo.png" alt="Lucky Egg">
+<h1>Top spotters</h1>
+<p class="sub">Fakes reported to the brand protection team</p>
+
+<div class="totals" id="totals" hidden>
+  <div class="stat"><b id="t-people">—</b><span>Spotters</span></div>
+  <div class="stat"><b id="t-reported">—</b><span>Links reported</span></div>
+  <div class="stat"><b id="t-removed">—</b><span>Taken down</span></div>
+</div>
+
+<main class="card">
+  <div id="wrap">
+    <p class="empty" id="loading">Loading the board…</p>
+  </div>
+  <p class="nav"><a href="index.html">Report a fake</a></p>
+</main>
+
+<footer>
+  Counts update as our team works through each report. "Taken down" means the
+  post or listing has since come off the platform.
+</footer>
+
+<script>
+const SUPABASE_URL = "https://ecpwutlxsuskbtmobjpb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JVl256qyNk7oG7as2L7NXg_OIikEOcg";
+
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g,
+  c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+function when(d){
+  if (!d) return "—";
+  const dt = new Date(d + "T00:00:00");
+  if (isNaN(dt)) return "—";
+  return String(dt.getDate()).padStart(2,"0") + "/" + String(dt.getMonth()+1).padStart(2,"0");
+}
+
+(async () => {
+  const wrap = document.getElementById("wrap");
+  try {
+    const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/eggsternal_leaderboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY,
+                 Authorization: "Bearer " + SUPABASE_KEY },
+      body: "{}"
+    });
+    if (!res.ok) throw new Error("http " + res.status);
+    const rows = await res.json();
+
+    if (!Array.isArray(rows) || !rows.length){
+      wrap.innerHTML = '<p class="empty">No reports yet.<br>Be the first name on the board.</p>';
+      return;
+    }
+
+    const totalReported = rows.reduce((t, r) => t + (+r.reported || 0), 0);
+    const totalRemoved  = rows.reduce((t, r) => t + (+r.removed  || 0), 0);
+    document.getElementById("t-people").textContent   = rows.length;
+    document.getElementById("t-reported").textContent = totalReported;
+    document.getElementById("t-removed").textContent  = totalRemoved;
+    document.getElementById("totals").hidden = false;
+
+    wrap.innerHTML =
+      '<table><thead><tr>' +
+        '<th>#</th><th>Spotter</th>' +
+        '<th class="num">Reported</th><th class="num">Down</th><th class="num">Last</th>' +
+      '</tr></thead><tbody>' +
+      rows.map(r => {
+        const cls = r.place === 1 ? "top1" : r.place === 2 ? "top2" : r.place === 3 ? "top3" : "";
+        return '<tr class="' + cls + '">' +
+          '<td class="place">' + esc(r.place) + '</td>' +
+          '<td class="handle">@' + esc(r.handle) + '</td>' +
+          '<td class="num">' + esc(r.reported) + '</td>' +
+          '<td class="num removed">' + esc(r.removed) + '</td>' +
+          '<td class="num">' + esc(when(r.last_report)) + '</td>' +
+        '</tr>';
+      }).join("") +
+      '</tbody></table>';
+  } catch (err) {
+    wrap.innerHTML = '<p class="empty">Couldn\'t load the board just now.<br>Please try again shortly.</p>';
+  }
+})();
+</script>
+</body>
+</html>

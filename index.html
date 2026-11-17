@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Report a fake or copied Lucky Egg product you've spotted on TikTok, Instagram or YouTube.">
+<title>Report a fake · Lucky Egg</title>
+<link rel="icon" href="logo.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="card">
+  <img class="logo" src="logo.png" alt="Lucky Egg">
+  <h1>Spotted a fake?</h1>
+  <p class="sub">Paste the link, we'll do the rest</p>
+
+  <form id="f" novalidate>
+    <div class="field">
+      <label for="handle">Your username <span class="hint">(so we know who to thank)</span></label>
+      <input id="handle" name="handle" type="text" autocomplete="username"
+             inputmode="text" placeholder="luckyeggfan" maxlength="30" autocapitalize="none" spellcheck="false">
+    </div>
+
+    <div class="field">
+      <label for="url">The link</label>
+      <input id="url" name="url" type="url" inputmode="url"
+             placeholder="https://www.tiktok.com/@…" maxlength="500" autocapitalize="none" spellcheck="false">
+    </div>
+
+    <div class="trap" aria-hidden="true">
+      <label for="website">Website</label>
+      <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+
+    <button id="btn" type="submit">Report it</button>
+    <div id="msg" class="msg" role="status" aria-live="polite"></div>
+    <div id="count" class="count"></div>
+  </form>
+
+  <p class="nav"><a href="leaderboard.html">See the top spotters</a></p>
+</main>
+
+<footer>
+  TikTok, Instagram and YouTube links only. Reports go straight to the Lucky Egg
+  brand protection team. Thank you for helping keep fakes off the internet.
+</footer>
+
+<script>
+const SUPABASE_URL = "https://ecpwutlxsuskbtmobjpb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_JVl256qyNk7oG7as2L7NXg_OIikEOcg";
+
+const f = document.getElementById("f");
+const btn = document.getElementById("btn");
+const msg = document.getElementById("msg");
+const countEl = document.getElementById("count");
+const handleEl = document.getElementById("handle");
+const urlEl = document.getElementById("url");
+let sent = 0;
+
+// Remember the handle so a partner reporting several links types it once.
+try { const h = localStorage.getItem("eggsternal_handle"); if (h) handleEl.value = h; } catch (e) {}
+
+function show(kind, text){ msg.className = "msg show " + kind; msg.textContent = text; }
+
+f.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const handle = handleEl.value.trim().replace(/^@+/, "");
+  const url = urlEl.value.trim();
+  if (!handle){ show("err", "Please add your username."); handleEl.focus(); return; }
+  if (!url){ show("err", "Please paste a link."); urlEl.focus(); return; }
+
+  btn.disabled = true;
+  const label = btn.textContent;
+  btn.textContent = "Sending…";
+  msg.className = "msg";
+
+  try {
+    const res = await fetch(SUPABASE_URL + "/rest/v1/rpc/eggsternal_submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY,
+                 Authorization: "Bearer " + SUPABASE_KEY },
+      body: JSON.stringify({
+        p_handle: handle,
+        p_url: url,
+        p_website: document.getElementById("website").value
+      })
+    });
+    if (!res.ok) throw new Error("http " + res.status);
+    const out = await res.json();
+
+    if (out && out.ok && out.status === "added"){
+      try { localStorage.setItem("eggsternal_handle", handle); } catch (e) {}
+      sent++;
+      show("ok", "Got it, thank you. Our team will take a look.");
+      urlEl.value = "";
+      countEl.textContent = sent === 1 ? "1 link reported" : sent + " links reported";
+      urlEl.focus();
+    } else if (out && out.ok && out.status === "duplicate"){
+      try { localStorage.setItem("eggsternal_handle", handle); } catch (e) {}
+      show("dupe", "Good spot, that one is already on our list.");
+      urlEl.value = "";
+      urlEl.focus();
+    } else {
+      show("err", (out && out.error) || "Something went wrong. Please try again.");
+    }
+  } catch (err) {
+    show("err", "Couldn't send that just now. Please check your connection and try again.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
+});
+</script>
+</body>
+</html>
