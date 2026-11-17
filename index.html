@@ -11,11 +11,16 @@
 </head>
 <body>
 
-<main class="card">
-  <img class="logo" src="logo.png" alt="Lucky Egg">
-  <h1>Spotted a fake?</h1>
-  <p class="sub">Paste the link, we'll do the rest</p>
+<img class="logo" src="logo.png" alt="Lucky Egg">
+<h1>Spotted a fake?</h1>
+<p class="sub">Paste the link, we'll do the rest</p>
 
+<nav class="tabs">
+  <a class="tab" href="index.html" aria-current="page">Report a fake</a>
+  <a class="tab" href="leaderboard.html">Top spotters</a>
+</nav>
+
+<main class="card">
   <form id="f" novalidate>
     <div class="field">
       <label for="handle">Your username <span class="hint">(so we know who to thank)</span></label>
@@ -38,8 +43,6 @@
     <div id="msg" class="msg" role="status" aria-live="polite"></div>
     <div id="count" class="count"></div>
   </form>
-
-  <p class="nav"><a href="leaderboard.html">See the top spotters</a></p>
 </main>
 
 <footer>
